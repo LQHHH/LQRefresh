@@ -58,6 +58,9 @@ CGFloat const LQEarthHeight = 25;
     self.frame = frame;
     self.state = LQRefreshStatePrepare;
     self.startContentOffsetY = self.scrollView.contentOffset.y;
+    [self bgImageView];
+    [self imageView];
+    [self animationLayer];
     
 }
 
@@ -74,9 +77,6 @@ CGFloat const LQEarthHeight = 25;
     if (!self.isLQRefreshHead) {
         return;
     }
-    [self bgImageView];
-    [self imageView];
-    [self animationLayer];
     if (scrollView.isDragging ) {
         if (self.state == LQRefreshStateEnd) {
             self.state = LQRefreshStatePrepare;
@@ -128,31 +128,31 @@ CGFloat const LQEarthHeight = 25;
     rotationAnimaiton.fillMode = kCAFillModeForwards;
     rotationAnimaiton.removedOnCompletion = NO;
     [self.animationLayer addAnimation:rotationAnimaiton forKey:nil];
-    [self strokeAnimation];
+    [self strokeEndAnimation];
 }
 
-- (void)strokeAnimation {
-    CABasicAnimation *strokeAnimaiton = [CABasicAnimation animationWithKeyPath:@"strokeEnd"];
-    strokeAnimaiton.duration = 0.8;
-    strokeAnimaiton.fromValue = @0;
-    strokeAnimaiton.toValue = @1;
-    strokeAnimaiton.fillMode = kCAFillModeForwards;
-    strokeAnimaiton.removedOnCompletion = NO;
-    strokeAnimaiton.delegate = self;
-    [strokeAnimaiton setValue:@"strokeAnimation" forKey:@"stroke"];
-    [self.animationLayer addAnimation:strokeAnimaiton forKey:@"strokeAnimation"];
+- (void)strokeEndAnimation {
+    CABasicAnimation *strokeEndAnimation = [CABasicAnimation animationWithKeyPath:@"strokeEnd"];
+    strokeEndAnimation.duration = 0.8;
+    strokeEndAnimation.fromValue = @0;
+    strokeEndAnimation.toValue = @1;
+    strokeEndAnimation.fillMode = kCAFillModeForwards;
+    strokeEndAnimation.removedOnCompletion = NO;
+    strokeEndAnimation.delegate = self;
+    [strokeEndAnimation setValue:@"strokeEndAnimation" forKey:@"stroke"];
+    [self.animationLayer addAnimation:strokeEndAnimation forKey:@"strokeEndAnimation"];
 }
 
-- (void)stroke1Animation {
-    CABasicAnimation *stroke1Animation = [CABasicAnimation animationWithKeyPath:@"strokeStart"];
-    stroke1Animation.duration = 1;
-    stroke1Animation.fromValue = @0;
-    stroke1Animation.toValue = @1;
-    stroke1Animation.fillMode = kCAFillModeForwards;
-    stroke1Animation.removedOnCompletion = NO;
-    stroke1Animation.delegate = self;
-    [stroke1Animation setValue:@"stroke1Animation" forKey:@"stroke"];
-    [self.animationLayer addAnimation:stroke1Animation forKey:@"stroke1Animation"];
+- (void)strokeStartAnimation {
+    CABasicAnimation *strokeStartAnimation = [CABasicAnimation animationWithKeyPath:@"strokeStart"];
+    strokeStartAnimation.duration = 1;
+    strokeStartAnimation.fromValue = @0;
+    strokeStartAnimation.toValue = @1;
+    strokeStartAnimation.fillMode = kCAFillModeForwards;
+    strokeStartAnimation.removedOnCompletion = NO;
+    strokeStartAnimation.delegate = self;
+    [strokeStartAnimation setValue:@"strokeStartAnimation" forKey:@"stroke"];
+    [self.animationLayer addAnimation:strokeStartAnimation forKey:@"strokeStartAnimation"];
 }
 
 #pragma mark - caanimationDelegate
@@ -163,9 +163,9 @@ CGFloat const LQEarthHeight = 25;
         _animationCount = 0;
         return;
     }
-    if ([[anim valueForKey:@"stroke"] isEqualToString:@"strokeAnimation"]) {
-        [self.animationLayer removeAnimationForKey:@"strokeAnimation"];
-        [self stroke1Animation];
+    if ([[anim valueForKey:@"stroke"] isEqualToString:@"strokeEndAnimation"]) {
+        [self.animationLayer removeAnimationForKey:@"strokeEndAnimation"];
+        [self strokeStartAnimation];
     }
     else {
         _animationCount++;
@@ -176,8 +176,8 @@ CGFloat const LQEarthHeight = 25;
                                                           endAngle:2*M_PI+(3*M_PI_2)*_animationCount
                                                          clockwise:YES];
         self.animationLayer.path = path.CGPath;
-        [self.animationLayer removeAnimationForKey:@"stroke1Animation"];
-        [self strokeAnimation];
+        [self.animationLayer removeAnimationForKey:@"strokeStartAnimation"];
+        [self strokeEndAnimation];
     }
 }
 
@@ -199,7 +199,7 @@ CGFloat const LQEarthHeight = 25;
         _bgImageView = [UIImageView new];
         _bgImageView.bounds = CGRectMake(0, 0, LQEarthHeight, LQEarthHeight);
         _bgImageView.contentMode = UIViewContentModeScaleAspectFill;
-        _bgImageView.center = self.center;
+        _bgImageView.center = CGPointMake(self.center.x, LQRefreshHeaderHeight/2);
         NSBundle *bundle = [NSBundle bundleWithPath:[[NSBundle mainBundle] pathForResource:@"image" ofType:@"bundle"]];
         _bgImageView.image = [UIImage imageWithData:[NSData dataWithContentsOfFile:[bundle pathForResource:@"grayEarth" ofType:@"png"]]];
         [self addSubview:_bgImageView];
@@ -213,7 +213,7 @@ CGFloat const LQEarthHeight = 25;
         _imageView = [UIImageView new];
         _imageView.bounds = CGRectMake(0, 0, LQEarthHeight, LQEarthHeight);
         _imageView.contentMode = UIViewContentModeScaleAspectFill;
-        _imageView.center = self.center;
+        _imageView.center = CGPointMake(self.center.x, LQRefreshHeaderHeight/2);
         NSBundle *bundle = [NSBundle bundleWithPath:[[NSBundle mainBundle] pathForResource:@"image" ofType:@"bundle"]];
         _imageView.image = [UIImage imageWithData:[NSData dataWithContentsOfFile:[bundle pathForResource:@"earth" ofType:@"png"]]];
         _imageView.layer.mask = self.maskLayer;
@@ -237,7 +237,7 @@ CGFloat const LQEarthHeight = 25;
         CGFloat w = LQEarthHeight + 15;
         CAShapeLayer * layer = [CAShapeLayer layer];
         layer.bounds = CGRectMake(0, 0, w, w);
-        layer.position = self.layer.position;
+        layer.position = CGPointMake(self.layer.position.x, LQRefreshHeaderHeight/2);;
         layer.backgroundColor = [UIColor clearColor].CGColor;
         layer.lineWidth = 2;
         layer.lineCap = kCALineCapRound;

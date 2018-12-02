@@ -1,0 +1,6 @@
+module Pods_LQRefreshSwiftDemo {
+  umbrella header "Pods-LQRefreshSwiftDemo-umbrella.h"
+
+  export *
+  module * { export * }
+}

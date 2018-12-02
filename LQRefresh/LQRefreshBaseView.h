@@ -9,9 +9,7 @@
 #import <UIKit/UIKit.h>
 
 UIKIT_EXTERN const CGFloat LQRefreshHeaderHeight;
-UIKIT_EXTERN const CGFloat LQRefreshFooterHeight;
 UIKIT_EXTERN NSString *const LQRefreshScrollViewContentOffset;
-UIKIT_EXTERN NSString *const LQRefreshScrollViewContentOffsize;
 
 typedef void(^LQRefreshingBlock)(void);
 

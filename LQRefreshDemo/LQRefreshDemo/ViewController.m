@@ -33,8 +33,7 @@
 - (void)setupUI {
     [self.view addSubview:self.tableView];
     [_tableView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.offset = 0;
-        make.left.right.bottom.offset = 0;
+        make.edges.offset = 0;
     }];
 }
 
@@ -52,6 +51,7 @@
     }
     cell.textLabel.text = [NSString stringWithFormat:@"%ld",indexPath.row];
     cell.backgroundColor = [UIColor orangeColor];
+    cell.selectionStyle = UITableViewCellSelectionStyleNone;
     return cell;
 }
 
@@ -71,9 +71,9 @@
         _tableView.lq_header = [LQRefreshHeader headerWithRefreshBlock:^{
             //模拟正在刷新数据
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                        self.cellNum = arc4random() % 5 +1;
-                        [self.tableView reloadData];
-                        [self.tableView.lq_header endRefresh];
+                        __weak.cellNum = arc4random() % 5 +1;
+                        [__weak.tableView reloadData];
+                        [__weak.tableView.lq_header endRefresh];
             });
         }];
         */

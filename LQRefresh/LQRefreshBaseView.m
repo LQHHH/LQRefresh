@@ -9,9 +9,7 @@
 #import "LQRefreshBaseView.h"
 
 CGFloat const  LQRefreshHeaderHeight = 50;
-CGFloat const  LQRefreshFooterHeight = 40;
 NSString *const LQRefreshScrollViewContentOffset = @"contentOffset";
-NSString *const LQRefreshScrollViewContentOffsize = @"contentSize";
 
 @implementation LQRefreshBaseView
 
@@ -46,19 +44,17 @@ NSString *const LQRefreshScrollViewContentOffsize = @"contentSize";
         CGRect frame = self.frame;
         frame.size.width = newSuperview.frame.size.width>0? :[UIScreen mainScreen].bounds.size.width;
         self.frame = frame;
-        [self addObservre];
+        [self addObserver];
     }
 }
 
-- (void)addObservre {
+- (void)addObserver {
     NSKeyValueObservingOptions options = NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld;
     [self.scrollView addObserver:self forKeyPath:LQRefreshScrollViewContentOffset options:options context:nil];
-    [self.scrollView addObserver:self forKeyPath:LQRefreshScrollViewContentOffsize options:options context:nil];
 }
 
 - (void)removeObserver {
     [self.superview removeObserver:self forKeyPath:LQRefreshScrollViewContentOffset];
-    [self.superview removeObserver:self forKeyPath:LQRefreshScrollViewContentOffsize];
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context {
@@ -66,13 +62,9 @@ NSString *const LQRefreshScrollViewContentOffsize = @"contentSize";
     if ([keyPath isEqualToString:LQRefreshScrollViewContentOffset]) {
         [self scrollView:self.scrollView contentOffsetDidChange:change];
     }
-    if ([keyPath isEqualToString:LQRefreshScrollViewContentOffsize]) {
-        [self scrollView:self.scrollView contentOffsizeDidChange:change];
-    }
 }
 
 - (void)scrollView:(UIScrollView *)scrollView contentOffsetDidChange:(NSDictionary *)dictionary {}
-- (void)scrollView:(UIScrollView *)scrollView contentOffsizeDidChange:(NSDictionary *)dictionary {}
 
 - (void)refreshTarget:(id)target action:(SEL)action {
     self.refreshingTarget = target;
